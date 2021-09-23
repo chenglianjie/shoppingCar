@@ -1,25 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
-
+import { useDispatch, useSelector } from "dva";
 function App() {
+  const app = useSelector((store) => {
+    return store.test;
+  });
+  const dispatch = useDispatch();
+  const click = () => {
+    dispatch({ type: "test/test", data: { name: "jimmy" } });
+  };
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      hello react
+      <button
+        onClick={() => {
+          click();
+        }}
+      >
+        点击
+      </button>
+      <div>名字：{app?.name}</div>
     </div>
   );
 }
-
 export default App;
