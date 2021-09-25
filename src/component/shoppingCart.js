@@ -19,6 +19,8 @@ const plainOptions = ["XS", "S", "M", "ML", "L", "XL", "XXL"];
 // 购物车组件
 const ShoppingCart = () => {
   const dispatch = useDispatch();
+  const [filter, setFilter] = useState("normal"); // 价格筛选
+  const [size, setSize] = useState(plainOptions); // 筛选的型号
   const [visible, setVisible] = useState(false); // 购物车是否弹出
   const [totalPrice, setTotalPrice] = useState(0); // 购物车商品总价格
   // 拿到商品列表数组和购物车数组
@@ -34,18 +36,14 @@ const ShoppingCart = () => {
       dispatch({ type: "cart/addCar", action: { newCarData: carData } });
     }
     // 获得商品列表数据
-    dispatch({ type: "product/getListData" });
+    dispatch({ type: "product/getListData", action: { size, filter } });
   }, []);
   useUpdateEffect(() => {
-    console.log("我执行了");
     getTotalPrice(carData);
   }, [carData]);
-  const checkboxOnchange = (checkedValues) => {
-    console.log("checked = ", checkedValues);
-  };
-  const selecthOnchange = (value) => {
-    console.log(`selected ${value}`);
-  };
+  useUpdateEffect(() => {
+    dispatch({ type: "product/getListData", action: { size, filter } });
+  }, [size, filter]);
   // 商品数量改变 onchange
   const numberOnChange = (value) => {
     console.log(`number ${value}`);
@@ -102,8 +100,8 @@ const ShoppingCart = () => {
       <div className="left">
         <Checkbox.Group
           options={plainOptions}
-          defaultValue={plainOptions}
-          onChange={checkboxOnchange}
+          value={size}
+          onChange={(value) => setSize(value)}
         />
       </div>
       <div className="center">
@@ -115,10 +113,13 @@ const ShoppingCart = () => {
           <div className="selects">
             <span>价格排序：</span>
             <Select
-              defaultValue="lower"
+              value={filter}
               style={{ width: 120 }}
-              onChange={selecthOnchange}
+              onChange={(value) => {
+                setFilter(value);
+              }}
             >
+              <Option value="normal">normal</Option>
               <Option value="lower">lowestprice</Option>
               <Option value="high">highestprice</Option>
             </Select>

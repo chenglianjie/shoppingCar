@@ -14,8 +14,8 @@ const TestModal = {
     },
   },
   effects: {
-    *getListData({ payload }, { call, put }) {
-      let data = yield call(getProductData);
+    *getListData({ action }, { call, put }) {
+      let data = yield call(getProductData, action);
       yield put({
         type: "add",
         data,

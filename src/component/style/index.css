@@ -2,7 +2,7 @@
   width: 1200px;
   /* border: 1px solid red; */
   display: flex;
-  margin: 0 auto;
+  margin: 20px auto;
 }
 div {
   box-sizing: border-box;
