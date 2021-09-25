@@ -1,4 +1,6 @@
 import { useDispatch, useSelector } from "dva";
+import "./app.css";
+import Size from "./component/size";
 function App() {
   const app = useSelector((store) => {
     return store.test;
@@ -18,6 +20,7 @@ function App() {
         点击
       </button>
       <div>名字：{app?.name}</div>
+      <Size />
     </div>
   );
 }
