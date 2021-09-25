@@ -1,12 +1,14 @@
 import dva from "dva";
-import App from "./App";
-import HomeModel from "./modal/index";
-import TestModel from "./modal/test";
+import ProductModel from "./modal/product";
+import CartModel from "./modal/cart";
 import createHistory from "history/createHashHistory";
+import ShoppingCart from "./component/shoppingCart";
+import "./app.css";
+// dva配置 启动项目
 const app = dva({
   history: createHistory(),
 });
-app.model(HomeModel);
-app.model(TestModel);
-app.router(() => <App />);
+app.model(ProductModel);
+app.model(CartModel);
+app.router(() => <ShoppingCart />);
 app.start("#root");
