@@ -36,7 +36,7 @@ const ShoppingCart = () => {
   const { listData = [] } = product;
   const { carData = [] } = cart;
   useEffect(() => {
-    // 判断是否有购物车数据缓存
+    // 判断是否有购物车数据缓存，如果有，使用购物车缓存
     let carData = JSON.parse(localStorage.getItem("carData"));
     if (carData) {
       dispatch({ type: "cart/addCar", action: { newCarData: carData } });
@@ -44,15 +44,23 @@ const ShoppingCart = () => {
     // 获得商品列表数据
     dispatch({ type: "product/getListData", action: { size, filter } });
   }, []);
+  // 购物车书变化时，计算商品总价格
   useUpdateEffect(() => {
     getTotalPrice(carData);
   }, [carData]);
+  // 筛选条件改变时，重新请求商品list数据
   useUpdateEffect(() => {
     dispatch({ type: "product/getListData", action: { size, filter } });
   }, [size, filter]);
   // 商品数量改变 onchange
-  const numberOnChange = (value) => {
-    console.log(`number ${value}`);
+  const numberOnChange = (value, id) => {
+    let newCarData = cloneDeep(carData);
+    newCarData.forEach((item) => {
+      if (item.id === id) {
+        item.number = value;
+      }
+    });
+    dispatch({ type: "cart/addCar", action: { newCarData } });
   };
   // 删除购物车中的商品
   const delProducts = (id) => {
@@ -66,12 +74,9 @@ const ShoppingCart = () => {
       onOk() {
         let newCarData = cloneDeep(carData);
         newCarData = newCarData.filter((item) => item.id !== id);
-        localStorage.setItem("carData", JSON.stringify(newCarData));
         dispatch({ type: "cart/addCar", action: { newCarData } });
       },
-      onCancel() {
-        console.log("Cancel");
-      },
+      onCancel() {},
     });
   };
   // 打开或关闭购物车
@@ -101,11 +106,9 @@ const ShoppingCart = () => {
       });
       newCarData = [...newCarData, ...arr];
     }
-    localStorage.setItem("carData", JSON.stringify(newCarData));
     dispatch({ type: "cart/addCar", action: { newCarData } });
     message.success("加入购物车成功");
   };
-
   // 计算购物车商品总价格
   const getTotalPrice = (arr) => {
     let totalPrice = 0;
@@ -128,13 +131,12 @@ const ShoppingCart = () => {
         setVisible(false);
         message.success("购买成功，商品正在路上");
       },
-      onCancel() {
-        // console.log('Cancel');
-      },
+      onCancel() {},
     });
   };
   return (
     <div className="box">
+      {/* 购物车左边型号筛选部分 */}
       <div className="left">
         <Checkbox.Group
           options={plainOptions}
@@ -142,6 +144,7 @@ const ShoppingCart = () => {
           onChange={(value) => setSize(value)}
         />
       </div>
+      {/* 购物车中间商品列表展示部分 */}
       <div className="center">
         <div className="filter-header">
           <div className="filter-header-title">
@@ -263,9 +266,9 @@ const ShoppingCart = () => {
                         size="small"
                         min={1}
                         max={10}
-                        defaultValue={item?.number}
-                        onChange={() => {
-                          numberOnChange(item?.id);
+                        value={item?.number}
+                        onChange={(value) => {
+                          numberOnChange(value, item?.id);
                         }}
                       />
                     </div>

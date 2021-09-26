@@ -1,9 +1,9 @@
-import { getProductData } from "../request/request";
+import { getProductData } from "../request/request"; // 商品列表请求函数
 // 商品列表model
 const TestModal = {
   namespace: "product",
   state: {
-    listData: [],
+    listData: [], // 商品列表数组
   },
   reducers: {
     add(state, { data }) {

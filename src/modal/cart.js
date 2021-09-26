@@ -1,32 +1,18 @@
-// 初始initState
-// const getDefaultState = () => {
-//   let carData = localStorage.getItem("")
-//     ? JSON.parse(localStorage.getItem(""))
-//     : [];
-//   return { carData };
-// };
 // 购物车model
-const TestModal = {
+const CartModal = {
   namespace: "cart",
   state: {
-    carData: [],
+    carData: [], // 购物车数组
   },
   reducers: {
     addCar(state, { action }) {
+      localStorage.setItem("carData", JSON.stringify(action?.newCarData));
       return {
         ...state,
         carData: action?.newCarData,
       };
     },
   },
-  effects: {
-    *asyncAdd({ payload }, { call, put }) {
-      // yield call(delay, 1000)
-      yield put({
-        type: "add",
-        payload,
-      });
-    },
-  },
+  effects: {},
 };
-export default TestModal;
+export default CartModal;

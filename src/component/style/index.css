@@ -1,6 +1,5 @@
 .box {
   width: 1200px;
-  /* border: 1px solid red; */
   display: flex;
   margin: 20px auto;
 }
@@ -11,7 +10,6 @@ div {
   width: 240px;
   height: 40px;
   padding: 10px;
-  /* line-height: 40px; */
 }
 .filter-header {
   display: flex;
@@ -27,7 +25,6 @@ div {
 }
 .goodsList {
   width: 600px;
-  /* border: 1px solid yellow; */
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -35,8 +32,6 @@ div {
 }
 .goods-item {
   width: 180px;
-  /* height: 200px; */
-  /* border: 1px solid red; */
   margin-bottom: 20px;
 }
 .goods-item div {
@@ -57,9 +52,7 @@ div {
   cursor: pointer;
   width: 380px;
   line-height: 40px;
-  /* text-align: center; */
   margin-bottom: 22px;
-  /* margin-top: 22px; */
 }
 .right {
   width: 380px;
@@ -76,7 +69,6 @@ div {
 }
 .shop-cart-item {
   padding-left: 20px;
-  /* border: 1px solid blue; */
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
