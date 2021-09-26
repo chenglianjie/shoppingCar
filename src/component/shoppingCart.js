@@ -1,21 +1,8 @@
 import { useState, useEffect } from "react";
 import { useUpdateEffect } from "ahooks";
 import { useDispatch, useSelector } from "dva";
-import {
-  Checkbox,
-  Select,
-  Button,
-  Badge,
-  InputNumber,
-  Tooltip,
-  Drawer,
-  message,
-  Modal,
-} from "antd";
-import {
-  ShoppingCartOutlined,
-  ExclamationCircleOutlined,
-} from "@ant-design/icons";
+import { Checkbox, Select, Button, Badge, InputNumber, Tooltip, Drawer, message, Modal, Spin } from "antd";
+import { ShoppingCartOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { cloneDeep } from "loadsh";
 import "./style/index.css";
 const { Option } = Select;
@@ -30,7 +17,7 @@ const ShoppingCart = () => {
   const [visible, setVisible] = useState(false); // 购物车是否弹出
   const [totalPrice, setTotalPrice] = useState(0); // 购物车商品总价格
   // 拿到商品列表数组和购物车数组
-  const { product, cart } = useSelector((store) => {
+  const { product, cart, loading } = useSelector((store) => {
     return store;
   });
   const { listData = [] } = product;
@@ -138,75 +125,68 @@ const ShoppingCart = () => {
     <div className="box">
       {/* 购物车左边型号筛选部分 */}
       <div className="left">
-        <Checkbox.Group
-          options={plainOptions}
-          value={size}
-          onChange={(value) => setSize(value)}
-        />
+        <Checkbox.Group options={plainOptions} value={size} onChange={(value) => setSize(value)} />
       </div>
       {/* 购物车中间商品列表展示部分 */}
-      <div className="center">
-        <div className="filter-header">
-          <div className="filter-header-title">
-            <span className="product-number">{listData?.length}</span>{" "}
-            件商品被找到
+      <Spin spinning={loading?.global} tip="加载中，请稍等">
+        <div className="center">
+          <div className="filter-header">
+            <div className="filter-header-title">
+              <span className="product-number">{listData?.length}</span> 件商品被找到
+            </div>
+            <div className="selects">
+              <span>价格排序：</span>
+              <Select
+                value={filter}
+                style={{ width: 120 }}
+                onChange={(value) => {
+                  setFilter(value);
+                }}
+              >
+                <Option value="normal">normal</Option>
+                <Option value="lower">lowestprice</Option>
+                <Option value="high">highestprice</Option>
+              </Select>
+            </div>
           </div>
-          <div className="selects">
-            <span>价格排序：</span>
-            <Select
-              value={filter}
-              style={{ width: 120 }}
-              onChange={(value) => {
-                setFilter(value);
-              }}
-            >
-              <Option value="normal">normal</Option>
-              <Option value="lower">lowestprice</Option>
-              <Option value="high">highestprice</Option>
-            </Select>
+          <div className="goodsList">
+            {/* 渲染商品列表 */}
+            {listData.map((item) => {
+              return (
+                <div className="goods-item" key={item?.id}>
+                  <div>
+                    <img className="goods-list-img" src={require(`./img/${item?.sku}_1.jpg`).default} alt="" />
+                  </div>
+                  <div className="goods-list-tite">
+                    <Tooltip title="标题">{item?.title}</Tooltip>
+                  </div>
+                  <div>
+                    型号：
+                    {item?.availableSizes.map((item, index, arr) => {
+                      let length = arr.length;
+                      if (length === 1 || index + 1 === length) {
+                        return <span key={index}>{item}</span>;
+                      }
+                      return <span key={index}>{item}，</span>;
+                    })}
+                  </div>
+                  <div>价格：${item?.price}</div>
+                  <div>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        addShopingCar(item?.id);
+                      }}
+                    >
+                      加入购物车
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-        <div className="goodsList">
-          {/* 渲染商品列表 */}
-          {listData.map((item) => {
-            return (
-              <div className="goods-item" key={item?.id}>
-                <div>
-                  <img
-                    className="goods-list-img"
-                    src={require(`./img/${item?.sku}_1.jpg`).default}
-                    alt=""
-                  />
-                </div>
-                <div className="goods-list-tite">
-                  <Tooltip title="标题">{item?.title}</Tooltip>
-                </div>
-                <div>
-                  型号：
-                  {item?.availableSizes.map((item, index, arr) => {
-                    let length = arr.length;
-                    if (length === 1 || index + 1 === length) {
-                      return <span key={index}>{item}</span>;
-                    }
-                    return <span key={index}>{item}，</span>;
-                  })}
-                </div>
-                <div>价格：${item?.price}</div>
-                <div>
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      addShopingCar(item?.id);
-                    }}
-                  >
-                    加入购物车
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      </Spin>
       {/* 购物车 */}
       <div className="right">
         <div>
@@ -237,11 +217,7 @@ const ShoppingCart = () => {
                 return (
                   <div className="shop-cart-item" key={item?.id}>
                     <div>
-                      <img
-                        className="cart-img"
-                        src={require(`./img/${item.sku}_1.jpg`).default}
-                        alt=""
-                      />
+                      <img className="cart-img" src={require(`./img/${item.sku}_1.jpg`).default} alt="" />
                     </div>
                     <div>
                       <div className="goods-tite">
