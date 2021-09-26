@@ -9,11 +9,17 @@ import {
   InputNumber,
   Tooltip,
   Drawer,
+  message,
+  Modal,
 } from "antd";
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import {
+  ShoppingCartOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import { cloneDeep } from "loadsh";
 import "./style/index.css";
 const { Option } = Select;
+const { confirm } = Modal;
 // 型号数组
 const plainOptions = ["XS", "S", "M", "ML", "L", "XL", "XXL"];
 // 购物车组件
@@ -50,20 +56,31 @@ const ShoppingCart = () => {
   };
   // 删除购物车中的商品
   const delProducts = (id) => {
-    let newCarData = cloneDeep(carData);
-    newCarData = newCarData.filter((item) => item.id !== id);
-    localStorage.setItem("carData", JSON.stringify(newCarData));
-    dispatch({ type: "cart/addCar", action: { newCarData } });
+    confirm({
+      title: "你确定要删除此件商品嘛？",
+      icon: <ExclamationCircleOutlined />,
+      content: "小主要不再考虑一下吧",
+      okText: "删除",
+      okType: "danger",
+      cancelText: "取消",
+      onOk() {
+        let newCarData = cloneDeep(carData);
+        newCarData = newCarData.filter((item) => item.id !== id);
+        localStorage.setItem("carData", JSON.stringify(newCarData));
+        dispatch({ type: "cart/addCar", action: { newCarData } });
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
   };
-  // 关闭购物车
-  const onClose = () => {
-    setVisible(false);
-  };
-  // 打开购物车
-  const openShopingCar = () => {
-    // 打开购物车是计算购物车中商品的价格
-    getTotalPrice(carData);
-    setVisible(true);
+  // 打开或关闭购物车
+  const openOrCloseShoppingCar = (value, open) => {
+    if (open) {
+      // 打开购物车是计算购物车中商品的价格
+      getTotalPrice(carData);
+    }
+    setVisible(value);
   };
   // 加入购物车
   const addShopingCar = (id) => {
@@ -86,7 +103,9 @@ const ShoppingCart = () => {
     }
     localStorage.setItem("carData", JSON.stringify(newCarData));
     dispatch({ type: "cart/addCar", action: { newCarData } });
+    message.success("加入购物车成功");
   };
+
   // 计算购物车商品总价格
   const getTotalPrice = (arr) => {
     let totalPrice = 0;
@@ -94,6 +113,25 @@ const ShoppingCart = () => {
       totalPrice = totalPrice + arr[i].price * arr[i].number;
     }
     setTotalPrice(totalPrice.toFixed(2));
+  };
+  // 结算
+  const settlement = () => {
+    confirm({
+      title: "你确定要结算购物车中的商品嘛？",
+      icon: <ExclamationCircleOutlined />,
+      content: `合计价格${totalPrice}`,
+      okText: "确定结算",
+      cancelText: "取消",
+      onOk() {
+        localStorage.clear("carData");
+        dispatch({ type: "cart/addCar", action: { newCarData: [] } });
+        setVisible(false);
+        message.success("购买成功，商品正在路上");
+      },
+      onCancel() {
+        // console.log('Cancel');
+      },
+    });
   };
   return (
     <div className="box">
@@ -173,7 +211,7 @@ const ShoppingCart = () => {
             <div
               className="carts"
               onClick={() => {
-                openShopingCar();
+                openOrCloseShoppingCar(true, "open");
               }}
             >
               <ShoppingCartOutlined />
@@ -186,7 +224,9 @@ const ShoppingCart = () => {
             mask={false}
             title="购物车"
             placement="right"
-            onClose={onClose}
+            onClose={() => {
+              openOrCloseShoppingCar(false);
+            }}
             visible={visible}
           >
             <div className="shop-cart-item-box test-5">
@@ -244,9 +284,16 @@ const ShoppingCart = () => {
               })}
             </div>
             <div className="total">
-              <div> 合计：{totalPrice}</div>
+              <div> 合计：${totalPrice}</div>
               <div>
-                <Button type="primary">结算</Button>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    settlement();
+                  }}
+                >
+                  结算
+                </Button>
               </div>
             </div>
           </Drawer>
