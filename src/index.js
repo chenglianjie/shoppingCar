@@ -8,6 +8,10 @@ import "./app.css";
 // dva配置 启动项目
 const app = dva({
   history: createHistory(),
+  onStateChange: (store) => {
+    let carData = store?.cart?.carData ?? [];
+    localStorage.setItem("carData", JSON.stringify(carData));
+  },
 });
 app.use(createLoading());
 app.model(ProductModel);

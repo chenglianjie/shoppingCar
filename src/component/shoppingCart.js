@@ -47,7 +47,7 @@ const ShoppingCart = () => {
         item.number = value;
       }
     });
-    dispatch({ type: "cart/addCar", action: { newCarData } });
+    dispatch({ type: "cart/changeCar", action: { newCarData } });
   };
   // 删除购物车中的商品
   const delProducts = (id) => {
@@ -61,7 +61,7 @@ const ShoppingCart = () => {
       onOk() {
         let newCarData = cloneDeep(carData);
         newCarData = newCarData.filter((item) => item.id !== id);
-        dispatch({ type: "cart/addCar", action: { newCarData } });
+        dispatch({ type: "cart/decreaseCar", action: { newCarData } });
       },
       onCancel() {},
     });
