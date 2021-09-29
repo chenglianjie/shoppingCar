@@ -2,7 +2,7 @@
 const CartModal = {
   namespace: "cart",
   state: {
-    carData: [], // 购物车数组
+    carData: [], // 购物车数据数组
   },
   reducers: {
     // 加入购物车

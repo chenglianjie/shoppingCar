@@ -15,6 +15,7 @@ const TestModal = {
   },
   effects: {
     *getListData({ action }, { call, put }) {
+      // 发起请求，获取商品list数据
       let data = yield call(getProductData, action);
       yield put({
         type: "add",
